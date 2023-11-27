@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luisguilherme.zapdos.dto.UserDTO;
+import com.luisguilherme.zapdos.entities.User;
+import com.luisguilherme.zapdos.factories.TokenUtil;
 import com.luisguilherme.zapdos.factories.UserFactory;
 
 @SpringBootTest
@@ -27,18 +29,35 @@ public class UserControllerIT {
 	private MockMvc mockMvc;
 	
 	@Autowired
+	private TokenUtil tokenUtil;
+	
+	@Autowired
 	private ObjectMapper objectMapper;
 	
 	private Long countTotalUsers;
+	private String adminToken, clientToken, invalidToken;
+	private String clientUsername, adminUsername, password;
+	private User user;
+	private UserDTO userDTO;
 	
 	@BeforeEach
 	void setUp() throws Exception {
 
+		adminUsername = "maria@gmail.com";
+		clientUsername = "alex@gmail.com";
+		password = "123456";
 		countTotalUsers = 5L;
+		
+		adminToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, password);
+		clientToken = tokenUtil.obtainAccessToken(mockMvc, clientUsername, password);
+		invalidToken = adminToken + "xpto";
+		
+		user = UserFactory.createUser();
+		userDTO = UserFactory.createUserDTO();
 	}
 	
 	@Test
-	public void insertShouldReturnUserDTO() throws Exception {
+	public void insertShouldReturnUserDTOWhenAdminLogged() throws Exception {
 		
 		UserDTO userDTO = UserFactory.createUserDTO();
 		String jsonBody = objectMapper.writeValueAsString(userDTO);
@@ -47,6 +66,7 @@ public class UserControllerIT {
 		
 		ResultActions result = 
 				mockMvc.perform(post("/users")
+					.header("Authorization", "Bearer " + adminToken)
 					.content(jsonBody)
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON));
@@ -54,5 +74,32 @@ public class UserControllerIT {
 		result.andExpect(status().isCreated());
 		result.andExpect(jsonPath("$.id").value(countTotalUsers+1));
 		result.andExpect(jsonPath("$.name").value(expectedName));
+	}
+	
+	@Test
+	public void insertShouldReturnForbiddenWhenClientLogged() throws Exception {
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+
+		ResultActions result = mockMvc.perform(post("/users")
+				.header("Authorization", "Bearer " + clientToken)
+				.content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void insertShouldReturnUnauthorizedWhenNotLogged() throws Exception {
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+
+		ResultActions result = mockMvc.perform(post("/products")
+				.header("Authorization", "Bearer " + invalidToken)
+				.content(jsonBody).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isUnauthorized());
 	}
 }

@@ -32,7 +32,7 @@ public class UserServiceTests {
 	void setUp() throws Exception {
 		
 		user = UserFactory.createUser();
-		userDTO = new UserDTO(user);
+		userDTO = UserFactory.createUserDTO();
 		
 		Mockito.when(repository.save(any())).thenReturn(user);
 
