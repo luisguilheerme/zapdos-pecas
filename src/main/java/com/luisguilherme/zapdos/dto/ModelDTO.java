@@ -7,9 +7,12 @@ import java.util.Objects;
 import com.luisguilherme.zapdos.entities.Application;
 import com.luisguilherme.zapdos.entities.Model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ModelDTO {
 
 	private Long id;
+	@NotBlank(message = "Campo Obrigatório")
 	private String name;
 
 	private MakeDTO make;

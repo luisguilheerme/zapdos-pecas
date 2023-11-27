@@ -7,9 +7,12 @@ import java.util.Objects;
 import com.luisguilherme.zapdos.entities.Group;
 import com.luisguilherme.zapdos.entities.Subgroup;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class GroupDTO {
 
 	private Long id;
+	@NotBlank(message = "Campo Obrigatório")
 	private String name;
 
 	private List<SubgroupDTO> subgroups = new ArrayList<>();

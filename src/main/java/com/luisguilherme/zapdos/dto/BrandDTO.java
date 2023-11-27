@@ -7,9 +7,12 @@ import java.util.Objects;
 import com.luisguilherme.zapdos.entities.Brand;
 import com.luisguilherme.zapdos.entities.Part;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class BrandDTO {
 
 	private Long id;
+	@NotBlank(message = "Campo Obrigatório")
 	private String name;
 
 	private List<PartDTO> parts = new ArrayList<>();

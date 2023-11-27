@@ -9,9 +9,14 @@ import com.luisguilherme.zapdos.entities.Brand;
 import com.luisguilherme.zapdos.entities.Part;
 import com.luisguilherme.zapdos.entities.Subgroup;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class PartDTO {
 
 	private Long id;
+	@NotBlank(message = "Campo Obrigatório")
+	@Size(min = 3, max = 120, message = "O nome deve ter de 3 a 120 caracteres" )
 	private String descricao;
 	private String code;
 	private String originalCode;
