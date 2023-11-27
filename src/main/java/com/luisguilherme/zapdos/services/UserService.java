@@ -7,7 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.luisguilherme.zapdos.dto.UserDTO;
 import com.luisguilherme.zapdos.entities.Role;
 import com.luisguilherme.zapdos.entities.User;
 import com.luisguilherme.zapdos.projections.UserDetailsProjection;
@@ -34,6 +36,16 @@ public class UserService implements UserDetailsService {
 			user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
 		}
 		return user;
+	}
+	
+	@Transactional
+	public UserDTO insert(UserDTO dto) {
+		User entity = new User();
+		entity.setName(dto.getName());
+		entity.setEmail(dto.getEmail());
+		entity.setPassword(dto.getPassword());
+		entity = repository.save(entity);
+		return new UserDTO(entity);
 	}
 
 }
