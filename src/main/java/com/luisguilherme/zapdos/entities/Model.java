@@ -33,9 +33,10 @@ public class Model {
 
 	}
 
-	public Model(Long id, String name) {
+	public Model(Long id, String name, Make make) {
 		this.id = id;
 		this.name = name;
+		this.make = make;
 	}
 
 	public Long getId() {

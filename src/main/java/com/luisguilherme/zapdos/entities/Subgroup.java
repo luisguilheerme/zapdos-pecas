@@ -25,12 +25,18 @@ public class Subgroup {
 	@ManyToOne
 	@JoinColumn(name = "group_id")
 	private Group group;
-	
+
 	@OneToMany(mappedBy = "subgroup")
 	private List<Part> parts = new ArrayList<>();
 
 	public Subgroup() {
 
+	}
+
+	public Subgroup(Long id, String name, Group group) {
+		this.id = id;
+		this.name = name;
+		this.group = group;
 	}
 
 	public Long getId() {
