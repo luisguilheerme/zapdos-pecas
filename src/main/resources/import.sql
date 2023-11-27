@@ -52,12 +52,12 @@ INSERT INTO tb_subgroup (name, group_id) VALUES('4 Vias', 4);
 INSERT INTO tb_subgroup (name, group_id) VALUES('Cabo de Bateria', 5);
 INSERT INTO tb_subgroup (name, group_id) VALUES('Cabo de Ignição', 5);
 
-
+INSERT INTO tb_user (email, name, password) VALUES('maria@gmail.com', 'Maria Green', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+INSERT INTO tb_user (email, name, password) VALUES('alex@gmail.com', 'Alex Brown', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
 INSERT INTO tb_user (email, name, password) VALUES('john.doe@email.com', 'John Doe', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
 INSERT INTO tb_user (email, name, password) VALUES('jane.smith@email.com', 'Jane Smith', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
-INSERT INTO tb_user (email, name, password) VALUES('robert.johnson@email.com', 'Robert Johnson', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
 INSERT INTO tb_user (email, name, password) VALUES('emily.williams@email.com', 'Emily Williams', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
-INSERT INTO tb_user (email, name, password) VALUES('michael.brown@email.com', 'Michael Brown', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+
 
 
 INSERT INTO tb_role (authority) VALUES ('ROLE_CLIENT');
@@ -65,8 +65,8 @@ INSERT INTO tb_role (authority) VALUES ('ROLE_ADMIN');
 
 
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 1);
-INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (1, 2);
+INSERT INTO tb_user_role (user_id, role_id) VALUES (2, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (3, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (4, 1);
 INSERT INTO tb_user_role (user_id, role_id) VALUES (5, 1);
