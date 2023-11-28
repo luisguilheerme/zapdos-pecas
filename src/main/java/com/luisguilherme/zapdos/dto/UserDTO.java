@@ -8,11 +8,20 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.luisguilherme.zapdos.entities.User;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class UserDTO {
 
 	private Long id;
+	@Size(min = 2, max = 80, message = "O nome deve ter de 2 a 80 caracteres" )
+	@NotBlank(message = "Campo Obrigatório")
 	private String name;
+	@Email(message = "Email inválido")
+	@NotBlank(message = "Campo obrigatório")
 	private String email;
+	@NotBlank(message = "Campo obrigatório")
 	private String password;
 
 	private List<String> roles = new ArrayList();

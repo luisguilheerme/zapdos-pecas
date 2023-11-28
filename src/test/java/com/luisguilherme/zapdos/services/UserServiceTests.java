@@ -16,6 +16,8 @@ import com.luisguilherme.zapdos.entities.User;
 import com.luisguilherme.zapdos.factories.UserFactory;
 import com.luisguilherme.zapdos.repositories.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @ExtendWith(SpringExtension.class)
 public class UserServiceTests {
 
@@ -27,14 +29,21 @@ public class UserServiceTests {
 	
 	private User user;
 	private UserDTO userDTO;
+	private long existingId;
+	private long nonExistingId;
 	
 	@BeforeEach
 	void setUp() throws Exception {
 		
+		existingId = 1L;
+		nonExistingId = 2L;
 		user = UserFactory.createUser();
 		userDTO = UserFactory.createUserDTO();
 		
 		Mockito.when(repository.save(any())).thenReturn(user);
+		
+		Mockito.when(repository.getReferenceById(existingId)).thenReturn(user);
+		Mockito.when(repository.getReferenceById(nonExistingId)).thenThrow(EntityNotFoundException.class);
 
 	}
 	
@@ -46,4 +55,5 @@ public class UserServiceTests {
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(result.getId(), user.getId());		
 	}
+	
 }

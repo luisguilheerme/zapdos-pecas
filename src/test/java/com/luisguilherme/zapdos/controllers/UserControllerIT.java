@@ -1,6 +1,7 @@
 package com.luisguilherme.zapdos.controllers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +40,8 @@ public class UserControllerIT {
 	private String clientUsername, adminUsername, password;
 	private User user;
 	private UserDTO userDTO;
+	private Long existingId;
+	private Long nonExistingId;
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -47,6 +50,8 @@ public class UserControllerIT {
 		clientUsername = "alex@gmail.com";
 		password = "123456";
 		countTotalUsers = 5L;
+		existingId = 1L;
+		nonExistingId = 100L;
 		
 		adminToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, password);
 		clientToken = tokenUtil.obtainAccessToken(mockMvc, clientUsername, password);
@@ -101,5 +106,62 @@ public class UserControllerIT {
 				.accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	public void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidName() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setName("x");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(post("/users")
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+	}
+	
+	@Test
+	public void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidEmail() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setEmail("xxxx");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(post("/users")
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+	}
+
+	@Test
+	public void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndBlankPassword() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setEmail("xxxx");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(post("/users")
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
 	}
 }
