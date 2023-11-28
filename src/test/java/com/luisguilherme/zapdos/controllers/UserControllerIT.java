@@ -151,12 +151,133 @@ public class UserControllerIT {
 				
 		UserDTO userDTO = UserFactory.createUserDTO();
 		
-		userDTO.setEmail("xxxx");
+		userDTO.setPassword("");
 		
 		String jsonBody = objectMapper.writeValueAsString(userDTO);
 		
 		ResultActions result = 
 				mockMvc.perform(post("/users")
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+	}
+	
+	@Test
+	public void updateShouldReturnForbiddenWhenClientLogged() throws Exception {
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+
+		ResultActions result = mockMvc.perform(put("/users/{id}", existingId)
+				.header("Authorization", "Bearer " + clientToken)
+				.content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isForbidden());
+	}
+	
+	@Test
+	public void updateShouldReturnUnauthorizedWhenNotLogged() throws Exception {
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+
+		ResultActions result = mockMvc.perform(put("/users/{id}", existingId)
+				.header("Authorization", "Bearer " + invalidToken)
+				.content(jsonBody).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	public void updateShouldReturnUserDTOWhenIdExistsAndAdminLogged() throws Exception {
+		
+		UserDTO userDTO = UserFactory.createUserDTO();
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		String expectedName = userDTO.getName();		
+		
+		ResultActions result = 
+				mockMvc.perform(put("/users/{id}", existingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.id").value(existingId));
+		result.andExpect(jsonPath("$.name").value(expectedName));
+	}
+	
+	@Test
+	public void updateShouldReturnNotFoundWhenIdDoesNotExistAndAdminLogged() throws Exception {
+		
+		UserDTO userDTO = UserFactory.createUserDTO();
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(put("/users/{id}", nonExistingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isNotFound());
+	}
+
+
+	@Test
+	public void updateShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidName() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setName("x");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(put("/users/{id}", existingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+	}
+	
+	@Test
+	public void updateShouldReturnUnprocessableEntityWhenAdminLoggedAndInvalidEmail() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setEmail("xxxx");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(put("/users/{id}", existingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+	}
+
+	@Test
+	public void updateShouldReturnUnprocessableEntityWhenAdminLoggedAndBlankPassword() throws Exception {	
+				
+		UserDTO userDTO = UserFactory.createUserDTO();
+		
+		userDTO.setPassword("");
+		
+		String jsonBody = objectMapper.writeValueAsString(userDTO);
+		
+		ResultActions result = 
+				mockMvc.perform(put("/users/{id}", existingId)
 					.header("Authorization", "Bearer " + adminToken)
 					.content(jsonBody)
 					.contentType(MediaType.APPLICATION_JSON)

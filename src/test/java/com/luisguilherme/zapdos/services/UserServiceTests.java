@@ -56,4 +56,21 @@ public class UserServiceTests {
 		Assertions.assertEquals(result.getId(), user.getId());		
 	}
 	
+	@Test
+	public void updateShouldReturnUserDTOWhenIdExists() {
+		
+		UserDTO result = service.update(existingId, userDTO);
+		
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(result.getId(), existingId);	
+		Assertions.assertEquals(result.getName(), userDTO.getName());
+	}
+	
+	@Test
+	public void updateShouldReturnEntityNotFoundExceptionWhenIdDoesNotExists() {
+		
+		Assertions.assertThrows(EntityNotFoundException.class, () -> {
+			service.update(nonExistingId, userDTO);
+		});
+	}
 }

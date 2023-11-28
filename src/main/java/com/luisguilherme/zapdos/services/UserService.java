@@ -41,11 +41,22 @@ public class UserService implements UserDetailsService {
 	@Transactional
 	public UserDTO insert(UserDTO dto) {
 		User entity = new User();
-		entity.setName(dto.getName());
-		entity.setEmail(dto.getEmail());
-		entity.setPassword(dto.getPassword());
+		copyDtoToEntity(dto, entity);
 		entity = repository.save(entity);
 		return new UserDTO(entity);
 	}
-
+	
+	@Transactional
+	public UserDTO update(Long id, UserDTO dto) {
+			User entity = repository.getReferenceById(id);
+			copyDtoToEntity(dto, entity);
+			entity = repository.save(entity);
+			return new UserDTO(entity);
+	}
+	
+	private void copyDtoToEntity(UserDTO dto, User entity) {
+		entity.setName(dto.getName());
+		entity.setEmail(dto.getEmail());
+		entity.setPassword(dto.getPassword());
+	}
 }
