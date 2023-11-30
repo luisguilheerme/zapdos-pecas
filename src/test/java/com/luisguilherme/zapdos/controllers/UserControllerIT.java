@@ -1,5 +1,7 @@
 package com.luisguilherme.zapdos.controllers;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -284,5 +286,40 @@ public class UserControllerIT {
 					.accept(MediaType.APPLICATION_JSON));
 		
 		result.andExpect(status().isUnprocessableEntity());
+	}
+	
+	@Test
+	public void findByIdShouldReturnUserDTOWhenIdExists() throws Exception {			
+		
+		ResultActions result = 
+				mockMvc.perform(get("/users/{id}", existingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		
+		result.andExpect(status().isOk());		
+		result.andExpect(jsonPath("$.name").value(is("Maria Green")));		
+	}
+	
+	@Test
+	public void findByIdShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
+						
+		ResultActions result = 
+				mockMvc.perform(get("/users/{id}", nonExistingId)
+					.header("Authorization", "Bearer " + adminToken)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isNotFound());			
+	}
+	
+	@Test
+	public void findByIdShouldReturnUnauthorizedWhenNotLogged() throws Exception {
+		
+		ResultActions result = 
+				mockMvc.perform(get("/orders/{id}", existingId)
+					.header("Authorization", "Bearer " + invalidToken)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnauthorized());
 	}
 }

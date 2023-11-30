@@ -2,6 +2,8 @@ package com.luisguilherme.zapdos.services;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import com.luisguilherme.zapdos.dto.UserDTO;
 import com.luisguilherme.zapdos.entities.User;
 import com.luisguilherme.zapdos.factories.UserFactory;
 import com.luisguilherme.zapdos.repositories.UserRepository;
+import com.luisguilherme.zapdos.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -44,6 +47,9 @@ public class UserServiceTests {
 		
 		Mockito.when(repository.getReferenceById(existingId)).thenReturn(user);
 		Mockito.when(repository.getReferenceById(nonExistingId)).thenThrow(EntityNotFoundException.class);
+		
+		Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(user));
+		Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
 
 	}
 	
@@ -71,6 +77,24 @@ public class UserServiceTests {
 		
 		Assertions.assertThrows(EntityNotFoundException.class, () -> {
 			service.update(nonExistingId, userDTO);
+		});
+	}
+	
+	@Test
+	public void findByIdShouldReturnUserDTOWhenIdExists() {
+		
+		UserDTO result = service.findById(existingId);
+		
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(result.getId(), existingId);
+		Assertions.assertEquals(result.getName(), user.getName());
+	}
+	
+	@Test
+	public void findByIdShouldReturnResourceNotFoundExceptionWhenIdDoesNotExists() {		
+		
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.findById(nonExistingId);
 		});
 	}
 }

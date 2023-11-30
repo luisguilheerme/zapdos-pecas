@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.luisguilherme.zapdos.services.exceptions.CustomError;
+import com.luisguilherme.zapdos.services.exceptions.ResourceNotFoundException;
 import com.luisguilherme.zapdos.services.exceptions.ValidationError;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -40,6 +41,13 @@ public class ControllerExceptionHandler {
 		for(FieldError f : e.getBindingResult().getFieldErrors()) {
 			err.addError(f.getField(), f.getDefaultMessage());
 		}
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<CustomError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		CustomError err = new CustomError (Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(status).body(err);
 	}
 }
